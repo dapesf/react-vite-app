@@ -1,0 +1,16 @@
+.section-container {
+    height: 50px;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: #e0d4ec;
+}
+
+.section-container label {
+    display: inline;
+    padding: 2px;
+}
+
+.section-name
+, .section-prince {
+    
+}

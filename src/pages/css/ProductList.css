@@ -1,0 +1,35 @@
+.product-list-header {
+    width: 100%;
+    height: 50px;
+    border-bottom: solid 1px;
+}
+
+.product-type {
+    width: calc(100% - 100px);
+    height: 100%;
+    background-color: blueviolet;
+    float: inline-start;
+}
+
+.icon {
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-size: 85% 85%;
+    background-position: center;
+}
+
+.icon-sort {
+    float: left;
+    background-image: url('../../assets/sort.jpg');
+}
+
+.icon-filter {
+    float: right;
+    background-image: url('../../assets/filter.jpg');
+}
+
+.icon-more {
+    float: center;
+    background-image: url('../../assets/more.jpg');
+}

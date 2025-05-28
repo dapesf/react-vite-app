@@ -1,0 +1,11 @@
+.Button {
+    width: 50px;
+    height: 20px;
+    display: inline-block;
+}
+
+.btn-confirm {
+    background-color: #96bc96 !important;
+    color: #585656 !important;
+    font-weight: bold !important;
+}

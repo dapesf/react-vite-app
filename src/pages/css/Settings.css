@@ -1,0 +1,26 @@
+.setting-container {
+    width: 375px;
+}
+
+.setting-content {
+    width: 85%;
+    margin: auto;
+    user-select: none;
+}
+
+.setting-action{
+    width: 100%;
+    padding: 20px 0px;
+    font-size: 25px;
+}
+
+.setting-container hr {
+    height: 2px;
+    color: black;
+    background-color: black;
+    margin: 0px;
+}
+
+.setting-content label:hover {
+    background-color: palevioletred
+}
