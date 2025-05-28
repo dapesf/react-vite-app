@@ -23,7 +23,7 @@ const SlideZone: React.FC<SlideZoneProps> = ({ title, children }) => {
 					backgroundColor: '#ffffff',
 				}} >
 				<span style={{ userSelect: 'none' }}>
-					{(isOpen ? ' ⯆ ' : ' ⯈ ') + title}
+					{(isOpen ? ' ⯆ ' : ' ⯈s ') + title}
 				</span>
 			</div>
 
