@@ -1,0 +1,164 @@
+import { v4 as uuidv4 } from 'uuid';
+import React, { useEffect, useRef } from 'react';
+import type { ITableList, ITableListColumn } from './ITableList'
+import TableTh from './TableThead';
+import TableTd from './TableTd';
+import "./table-list.css";
+
+const TableListComponent = (props: ITableList) => {
+
+    const tableRef = useRef<HTMLTableElement>(null);
+    const tableThRef = useRef<HTMLTableElement>(null);
+    const tableDiv = useRef<HTMLDivElement>(null);
+    const header: ITableListColumn[] = props.colModel;
+    const data: any = props.data;
+    let curTrSelected: HTMLElement;
+
+    const TableListHeader = (cols: ITableListColumn[]) => {
+        return (
+            cols.map((item: ITableListColumn, id: number) => {
+                return (
+                    <TableTh
+                        key={id}
+                        name={item.name}
+                        label={item.label}
+                        width={item.width}
+                        index={id}
+                        hidden={item.hidden}>
+                    </TableTh>
+                )
+            })
+        )
+    }
+
+    const TableListBody = (cols: object[], data: object[], Tag?: React.ElementType): any => {
+        return (
+            data.map((row: any, id: any) => {
+                return (
+                    <tr key={id} data-key={uuidv4()}>
+                        {
+                            cols.map((col: any, _id: any) => {
+                                return (
+                                    <TableTd
+                                        key={_id}
+                                        htmlTag={col.htmlTag}
+                                        width={col.width}
+                                        index={_id}
+                                        value={row[col.name]}>
+                                    </TableTd>
+                                )
+                            })
+                        }
+                    </tr >
+                )
+            })
+        )
+    }
+
+    const handleMouseDown = (e: MouseEvent, th: HTMLTableCellElement, table: HTMLTableElement) => {
+
+        const divTb = tableDiv.current;
+        if (!divTb)
+            return;
+
+        const curGbox = document.createElement("div");
+        curGbox.classList.add("curGbox");
+        th.append(curGbox);
+
+        const startX = e.pageX;
+        const startWidth = th.offsetWidth;
+
+        const handleMouseMove = (event: MouseEvent) => {
+            const newWidth = startWidth + (event.pageX - startX);
+            curGbox.style.left = `${newWidth}px`;
+        };
+
+        const removeEvent = () => {
+            th.style.width = curGbox.style.left;
+            const index: any = th.getAttribute("data-index") || -1;
+            handleTableTdResize(index, th.style.width);
+            divTb.removeEventListener("mousemove", handleMouseMove);
+            divTb.removeEventListener("mouseup", removeEvent);
+            th.removeChild(curGbox);
+        };
+
+        divTb.addEventListener("mousemove", handleMouseMove);
+        divTb.addEventListener("mouseup", removeEvent);
+    }
+
+    const handleTableTdResize = (index: number, newWidth: string) => {
+        const table = tableRef.current;
+        if (!table)
+            return;
+        const tds = table.querySelectorAll("td");
+        tds[index].style.width = newWidth;
+    };
+
+    const eventDragCol = () => {
+        const tableHead = tableThRef.current;
+        if (!tableHead) return;
+
+        const thead = tableHead.children[0]; //thead element
+
+        tableHead.querySelectorAll("th").forEach((th) => {
+            const resizer = document.createElement("div");
+            resizer.classList.add("resizer");
+            th.appendChild(resizer);
+            resizer.addEventListener("mousedown", (e) => handleMouseDown(e, th as HTMLTableCellElement, tableHead));
+        });
+    }
+
+    const eventClickRow = () => {
+        const table = tableRef.current;
+        if (!table) return;
+
+        table.addEventListener("click", (e) => {
+            if (!e.target)
+                return;
+
+            if (!(e.target instanceof HTMLElement)) {
+                return;
+            }
+
+            const tr = e.target.closest("tr");
+            if (tr && !tr.classList.contains("tb-header")) {
+                if (curTrSelected) {
+                    curTrSelected.classList.remove("selected")
+                }
+                tr.classList.add("selected");
+                curTrSelected = tr
+            }
+        });
+    }
+
+    useEffect(() => {
+        eventDragCol();
+        eventClickRow();
+    }, []);
+
+    return (
+        <div ref={tableDiv} className="tb-list">
+            <div className='tb-fixed'>
+                <button>Add row</button>
+                <button>Delete row</button>
+                <button>Get row</button>
+            </div>
+            <div className="tb-container">
+                <table ref={tableThRef} className="tb-fixed">
+                    <thead>
+                        <tr>
+                            {TableListHeader(header)}
+                        </tr>
+                    </thead>
+                </table>
+                <table ref={tableRef} className="dataTable">
+                    <tbody>
+                        {TableListBody(header, data)}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    )
+}
+
+export { TableListComponent }

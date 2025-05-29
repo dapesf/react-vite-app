@@ -9,6 +9,7 @@ import { Text, Input, ButtonConfirm } from '../../component/UIComponents'
 // import { isUndefOrStrEmpty, DataBinding, FormCollection } from "../common/common.js"
 import SlideZone from '../../libs/SlideZone'
 import ToolBar from '../../libs/ToolBar'
+import ListTable from '../../grids/TableList'
 import style from '../css/UserMaster.module.css'
 
 export function UserMaster() {
@@ -168,14 +169,13 @@ export function UserMaster() {
 						</div>
 
 					</div>
-
-
 				</div>
 			</SlideZone>
 			<ToolBar>
 				<ButtonConfirm text="tim kiem"></ButtonConfirm>
 				<ButtonConfirm text="luu"></ButtonConfirm>
 			</ToolBar>
+			<ListTable></ListTable>
 		</>
 	)
 }
