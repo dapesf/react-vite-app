@@ -8,7 +8,7 @@ export default function TableTd(props: ITableListColumn) {
     const Hidden = props.hidden;
     const Index = props.index;
 
-    const TagHtml = props.htmlTag ?? (() => <></>)
+    //const TagHtml = props.htmlTag ?? (() => <></>)
 
     const Style = {
         width: With,
@@ -21,11 +21,12 @@ export default function TableTd(props: ITableListColumn) {
             className={ClassName}
             data-index={Index}
             ref={Ref}>
-            {
+            {/* {
                 <TagHtml
                     text={Value}
                 />
-            }
+            } */}
+            {Value}
         </td>
     )
 }

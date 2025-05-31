@@ -1,6 +1,6 @@
- /* #root {
-   margin: auto;
- } */
+ #root {
+   overflow-x: hidden;
+ }
 
  .row-control {
    height: 30px;

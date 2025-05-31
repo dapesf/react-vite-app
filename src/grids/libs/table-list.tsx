@@ -14,6 +14,10 @@ const TableListComponent = (props: ITableList) => {
     const data: any = props.data;
     let curTrSelected: HTMLElement;
 
+    header.push(
+        { name: "", label: "", width: "auto", key: 0, classNm: 'lst-col', hidden: true }
+    )
+
     const TableListHeader = (cols: ITableListColumn[]) => {
         return (
             cols.map((item: ITableListColumn, id: number) => {
@@ -24,6 +28,7 @@ const TableListComponent = (props: ITableList) => {
                         label={item.label}
                         width={item.width}
                         index={id}
+                        classNm={item.classNm}
                         hidden={item.hidden}>
                     </TableTh>
                 )
@@ -44,6 +49,7 @@ const TableListComponent = (props: ITableList) => {
                                         htmlTag={col.htmlTag}
                                         width={col.width}
                                         index={_id}
+                                        classNm={col.classNm}
                                         value={row[col.name]}>
                                     </TableTd>
                                 )
@@ -138,11 +144,11 @@ const TableListComponent = (props: ITableList) => {
 
     return (
         <div ref={tableDiv} className="tb-list">
-            <div className='tb-fixed'>
+            {/* <div className='tb-fixed'>
                 <button>Add row</button>
                 <button>Delete row</button>
                 <button>Get row</button>
-            </div>
+            </div> */}
             <div className="tb-container">
                 <table ref={tableThRef} className="tb-fixed">
                     <thead>

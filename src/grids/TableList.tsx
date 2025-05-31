@@ -17,7 +17,7 @@ export default function ListTable(props: any) {
 		{ name: "name", label: "name", width: "150px", htmlTag: Text, key: 0, hidden: false }
 		, { name: "language", label: "language", width: "100px", htmlTag: Text, key: 0, hidden: false }
 		, { name: "id", label: "id", width: "190px", htmlTag: Text, key: 0, hidden: false }
-		, { name: "bio", label: "bio", htmlTag: Text, key: 0, hidden: false }
+		, { name: "bio", label: "bio", width: "250px", htmlTag: Text, key: 0, hidden: false }
 		, { name: "version", label: "version", width: "100px", htmlTag: Text, key: 0, hidden: false }
 	]
 
@@ -27,8 +27,18 @@ export default function ListTable(props: any) {
 	};
 
 	return (
-		<Fragment>
-			<TableListComponent {...ConfigTable}></TableListComponent>
-		</Fragment>
+		<div
+			style={{
+				position: 'relative'
+				, display: 'flex'
+				, border: '1px solid #dee2e6'
+				, width: '1800px'
+				, overflow: 'auto'
+			}}
+		>
+			<Fragment>
+				<TableListComponent {...ConfigTable}></TableListComponent>
+			</Fragment>
+		</div>
 	)
 }

@@ -10,16 +10,23 @@
 }
 
 table {
-    position: relative;
-    table-layout: fixed;
+    /* position: relative; */
     width: 100%;
+    table-layout: fixed;
     overflow-y: scroll;
 }
 
-table,
-th,
-td {
-    border: 1px solid #b7b7b7;
+table:not(.lst-col) th:not(.lst-col),
+td:not(.lst-col) {
+    border: 1px solid #b7b7b7 !important;
+}
+
+.dataTable {
+    border: none;
+}
+
+.lst-col {
+    visibility: hidden;
 }
 
 .tb-fixed {
@@ -27,9 +34,9 @@ td {
     top: 0;
     z-index: 10;
     background: white;
+    border-bottom: none !important;
 }
 
-/* th, */
 td {
     max-height: 25px;
 }
