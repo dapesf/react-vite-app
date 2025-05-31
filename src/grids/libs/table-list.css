@@ -1,0 +1,78 @@
+.grip-div {
+    position: relative;
+    display: flex;
+    border: 1px solid #dee2e6;
+    width: 1800px;
+    overflow: auto;
+}
+
+.tb-list {
+    position: relative;
+}
+
+.tb-container {
+    position: relative;
+    height: 400px;
+    overflow: auto;
+    background: #ffffff;
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
+    overflow-y: scroll;
+}
+
+table:not(.lst-col) th:not(.lst-col),
+td:not(.lst-col) {
+    border: 1px solid #b7b7b7 !important;
+}
+
+.dataTable {
+    border: none;
+}
+
+.lst-col {
+    visibility: hidden;
+}
+
+.tb-fixed {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: white;
+    border-bottom: none !important;
+}
+
+td {
+    max-height: 25px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+th {
+    position: relative;
+    user-select: none;
+}
+
+.resizer {
+    width: 4px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    cursor: col-resize;
+}
+
+.selected {
+    background-color: #f7e7b6;
+}
+
+.curGbox {
+    position: absolute;
+    right: 0px;
+    width: 1px;
+    border: 1px solid #b7b7b7;
+}

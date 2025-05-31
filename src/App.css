@@ -1,0 +1,23 @@
+ #root {
+   overflow-x: hidden;
+ }
+
+ .row-control {
+   height: 30px;
+   background-color: #dfdfdf;
+   margin: 1px 0px;
+   flex-wrap: unset;
+ }
+
+ .control {
+   margin: 1px;
+   border-left: 1px solid;
+ }
+
+ .lbl-control {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   background-color: #B5caa0;
+   border-left: 5px solid #8b8b8b;
+ }

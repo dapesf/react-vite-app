@@ -1,0 +1,57 @@
+.dialog-container {
+    position: fixed;
+    width: 375px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.dialog-modal {
+    width: 200px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #e0ecd4;
+}
+
+.dialog-product-modal {
+    width: 350px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #e0ecd4;
+}
+
+.dialog-content {
+    margin: 0px 0px 30px 0px;
+}
+
+/* .dlg-sort-by label, input{
+    margin: 2px !important;
+} */
+
+.dialog-footer {
+    width: 100%;
+    height: 30px;
+    position: fixed;
+    padding: 1px;
+    bottom: 0;
+}
+
+.dialog-footer-left {
+    float: left;
+}
+
+.dialog-footer-right {
+    float: right;
+}
+
+.dlg-alert {
+    background-color: #e39797 !important;
+}
+
+.dlg-infor {
+    background-color: #96bc96 !important;
+}

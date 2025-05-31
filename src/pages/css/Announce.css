@@ -1,0 +1,40 @@
+.annouce-container {
+    width: 375px;
+}
+
+.annouce-action {
+    display: contents;
+}
+
+.annouce-action .trash {
+    float: right;
+}
+
+.annouce-check {
+    width: 15%;
+    text-align: center;
+    margin: auto;
+}
+
+.annouce-check input[type="checkbox"] {
+    transform: scale(3);
+}
+
+.annouce-list {
+    margin: auto;
+    user-select: none;
+    display: flex;
+}
+
+.annouce-content {
+    width: 100%;
+    padding: 20px 0px;
+    font-size: 20px;
+}
+
+.annouce-container hr {
+    height: 2px;
+    color: black;
+    background-color: black;
+    margin: 0px;
+}
