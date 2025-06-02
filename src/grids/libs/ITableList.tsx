@@ -18,6 +18,7 @@ interface ITableListColumn {
     hidden?: boolean,
     classNm?: string,
     elementRef?: any,
+    editCell?: boolean,
     rowspan?: number,
     colspan?: number,
     ref?: React.Ref<HTMLTableCellElement>,

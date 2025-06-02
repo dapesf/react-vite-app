@@ -21,11 +21,6 @@ export default function TableTd(props: ITableListColumn) {
             className={ClassName}
             data-index={Index}
             ref={Ref}>
-            {/* {
-                <TagHtml
-                    text={Value}
-                />
-            } */}
             {Value}
         </td>
     )

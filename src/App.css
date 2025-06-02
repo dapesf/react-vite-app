@@ -1,5 +1,7 @@
  #root {
    overflow-x: hidden;
+   background-color: #484848;
+   /* temp color */
  }
 
  .row-control {

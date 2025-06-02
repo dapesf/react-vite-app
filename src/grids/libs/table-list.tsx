@@ -138,25 +138,64 @@ const DataGrip = (props: ITableList) => {
         });
     }
 
-    const eventClickCell = {
+    const eventClickCell: {
+        elemTd: HTMLElement | undefined;
+        elemProps: ITableListColumn | undefined;
+        cellEdit: (elemProps: any) => void;
+        getElement: (element: HTMLElement) => ITableListColumn | undefined;
+        initEvent: () => void;
+    } = {
+        elemTd: undefined,
+        elemProps: undefined,
+        cellEdit: (self: any) => {
+            if (!self.elemProps) return;
 
-        initEvent: () => {
+            if (!self.elemProps.editCell) return;
+
+            if (self.elemTd.querySelector("input")) return;
+
+            const tdValue = self.elemTd.innerText;
+            self.elemTd.innerHTML = "";
+
+            const input = document.createElement("input");
+            input.value = tdValue;
+            input.type = "text";
+            input.style.width = "100%";
+
+            self.elemTd.appendChild(input);
+            input.focus();
+
+            const funcRollBackTd = () => {
+                const curValue = input.value;
+                self.elemTd.innerText = curValue;
+                input.removeEventListener("blur", funcRollBackTd);
+            }
+
+            input.addEventListener("blur", funcRollBackTd);
+        }
+        , getElement: (element) => {
+            const attrIndex = element.getAttribute("data-index") || null;
+            const index: number = attrIndex ? parseInt(attrIndex) : -1;
+            if (index < 0) return;
+            const elemProps = header.at(index);
+            return elemProps;
+        }
+        , initEvent: () => {
+            var self = eventClickCell;
             const table = tableRef.current;
             if (!table) return;
 
             table.addEventListener("click", (e) => {
-                if (!e.target)
-                    return;
+                if (!e.target) return;
+                if (!(e.target instanceof HTMLElement)) return;
+                if (e.target.tagName !== 'TD') return;
+                const element = e.target;
+                if (!element) return;
 
-                if (!(e.target instanceof HTMLElement)) {
-                    return;
-                }
+                self.elemTd = element;
+                self.elemProps = self.getElement(element);
+                self.cellEdit(self)
 
-                if (e.target.tagName !== 'TD') {
-                    return;
-                }
-
-                //debugger
                 return;
             });
         }
