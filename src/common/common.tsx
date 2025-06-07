@@ -2,8 +2,12 @@ const Sleep = (ms: any) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const isUndefOrStrEmpty = (str: any) => {
-    return (str === "" || str === undefined || str === null)
+const isUndefOrStrEmpty = (value: any) => {
+    return (value === "" || value === undefined || value === null)
+}
+
+const isNumeric = (value: any) => {
+    return !isNaN(value) && value.trim() !== "";
 }
 
 const DataBinding = (data: any, form: any) => {
@@ -48,4 +52,10 @@ const FormCollection = (form: any) => {
     return dataRtn;
 }
 
-export { Sleep, DataBinding, FormCollection, isUndefOrStrEmpty }
+export {
+    Sleep
+    , DataBinding
+    , FormCollection
+    , isUndefOrStrEmpty
+    , isNumeric
+}

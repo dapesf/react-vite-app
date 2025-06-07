@@ -1,9 +1,7 @@
 .grip-div {
     position: relative;
-    display: flex;
     border: 1px solid #dee2e6;
-    width: 1800px;
-    overflow: auto;
+    width: 100%;
 }
 
 .tb-list {
@@ -12,8 +10,9 @@
 
 .tb-container {
     position: relative;
-    height: 400px;
-    overflow: auto;
+    /* temp code */
+    height: 200px;
+    overflow-y: scroll;
     background: #ffffff;
 }
 
@@ -49,6 +48,8 @@ td {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    margin: 0px;
+    padding: 0px;
 }
 
 th {

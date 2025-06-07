@@ -20,7 +20,8 @@ export default function TableTd(props: ITableListColumn) {
             style={Style}
             className={ClassName}
             data-index={Index}
-            ref={Ref}>
+            ref={Ref}
+        >
             {Value}
         </td>
     )

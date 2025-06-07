@@ -10,6 +10,7 @@ interface ITableListColumn {
     name?: string,
     label?: string,
     width?: string,
+    dataType?: string,
     value?: any,
     key?: number,
     index?: number,
@@ -21,6 +22,7 @@ interface ITableListColumn {
     editCell?: boolean,
     rowspan?: number,
     colspan?: number,
+    htmlTag?: any,
     ref?: React.Ref<HTMLTableCellElement>,
     children?: React.ReactNode,
 }

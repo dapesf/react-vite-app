@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import React, { useEffect, useRef } from 'react';
+import { createRoot, type Root } from 'react-dom/client';
+import { InputTextCell } from '../../component/UIComponents';
 import type { ITableList, ITableListColumn } from './ITableList'
 import TableTh from './TableThead';
 import TableTd from './TableTd';
@@ -49,6 +51,7 @@ const DataGrip = (props: ITableList) => {
                                         width={col.width}
                                         index={_id}
                                         classNm={col.classNm}
+                                        // htmlTag={Tag}
                                         value={row[col.name]}>
                                     </TableTd>
                                 )
@@ -141,12 +144,31 @@ const DataGrip = (props: ITableList) => {
     const eventClickCell: {
         elemTd: HTMLElement | undefined;
         elemProps: ITableListColumn | undefined;
+        createInput: (root: Root, tdRoot: HTMLElement, elemProps: ITableListColumn | undefined, value: string) => void;
         cellEdit: (elemProps: any) => void;
         getElement: (element: HTMLElement) => ITableListColumn | undefined;
         initEvent: () => void;
     } = {
         elemTd: undefined,
         elemProps: undefined,
+        createInput: (root, tdRoot, elemProps, value) => {
+            const funcRollBackTd = (e: any, root: Root, tdRoot: HTMLElement) => {
+                root.unmount();
+                const newVal = e.target.value;
+                tdRoot.innerText = newVal;
+            }
+
+            const dataType = elemProps?.dataType;
+
+            return (
+                <InputTextCell
+                    type='text'
+                    dataType={dataType}
+                    value={value}
+                    onBlur={(e: any) => funcRollBackTd(e, root, tdRoot)}
+                />
+            )
+        },
         cellEdit: (self: any) => {
             if (!self.elemProps) return;
 
@@ -156,22 +178,9 @@ const DataGrip = (props: ITableList) => {
 
             const tdValue = self.elemTd.innerText;
             self.elemTd.innerHTML = "";
-
-            const input = document.createElement("input");
-            input.value = tdValue;
-            input.type = "text";
-            input.style.width = "100%";
-
-            self.elemTd.appendChild(input);
-            input.focus();
-
-            const funcRollBackTd = () => {
-                const curValue = input.value;
-                self.elemTd.innerText = curValue;
-                input.removeEventListener("blur", funcRollBackTd);
-            }
-
-            input.addEventListener("blur", funcRollBackTd);
+            const tdRoot = createRoot(self.elemTd);
+            const input = self.createInput(tdRoot, self.elemTd, self.elemProps, tdValue);
+            tdRoot.render(input);
         }
         , getElement: (element) => {
             const attrIndex = element.getAttribute("data-index") || null;
