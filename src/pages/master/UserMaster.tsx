@@ -12,7 +12,7 @@ import ToolBar from '../../libs/ToolBar'
 import style from '../css/UserMaster.module.css'
 import type { ITableList, ITableListColumn } from '../../grids/libs/ITableList'
 import dummy from '../../assets/dummy'
-import { DataGrip } from '../../grids/libs/table-list'
+import { DataGrip } from '../../grids/libs/DataGrip'
 import ListTable from '../../grids/TableList'
 
 export function UserMaster() {

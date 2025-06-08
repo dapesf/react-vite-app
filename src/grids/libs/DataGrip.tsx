@@ -1,11 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import React, { useEffect, useRef } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { InputTextCell } from '../../component/UIComponents';
+import { InputTextCell, InputNumberCell } from '../../component/UIComponents';
 import type { ITableList, ITableListColumn } from './ITableList'
 import TableTh from './TableThead';
 import TableTd from './TableTd';
-import "./table-list.css";
+import "./DataGrip.css";
 
 const DataGrip = (props: ITableList) => {
 
@@ -14,6 +14,7 @@ const DataGrip = (props: ITableList) => {
     const tableDiv = useRef<HTMLDivElement>(null);
     const header: ITableListColumn[] = props.colModel;
     const data: any = props.data;
+    const afterCell = props.afterCell;
     let curTrSelected: HTMLElement;
 
     header.push(
@@ -144,6 +145,7 @@ const DataGrip = (props: ITableList) => {
     const eventClickCell: {
         elemTd: HTMLElement | undefined;
         elemProps: ITableListColumn | undefined;
+        leaveCell: (e: any, root: Root, tdRoot: HTMLElement) => void;
         createInput: (root: Root, tdRoot: HTMLElement, elemProps: ITableListColumn | undefined, value: string) => void;
         cellEdit: (elemProps: any) => void;
         getElement: (element: HTMLElement) => ITableListColumn | undefined;
@@ -151,24 +153,43 @@ const DataGrip = (props: ITableList) => {
     } = {
         elemTd: undefined,
         elemProps: undefined,
-        createInput: (root, tdRoot, elemProps, value) => {
-            const funcRollBackTd = (e: any, root: Root, tdRoot: HTMLElement) => {
-                root.unmount();
-                const newVal = e.target.value;
-                tdRoot.innerText = newVal;
+        /**
+         * leave cell event
+         */
+        leaveCell: (e: any, root: Root, tdRoot: HTMLElement) => {
+            root.unmount();
+            const newVal = e.target.value;
+            tdRoot.innerText = newVal;
+            if (afterCell && typeof (afterCell) === "function") {
+                afterCell();
             }
-
-            const dataType = elemProps?.dataType;
-
-            return (
-                <InputTextCell
-                    type='text'
-                    dataType={dataType}
-                    value={value}
-                    onBlur={(e: any) => funcRollBackTd(e, root, tdRoot)}
-                />
-            )
         },
+        /**
+         * create input corresponding data type
+         */
+        createInput: (root, tdRoot, elemProps, value) => {
+            const self = eventClickCell;
+            const dataType = elemProps?.dataType;
+            switch (dataType) {
+                case "NUMBER":
+                    return (
+                        <InputNumberCell
+                            value={value}
+                            onBlur={(e: any) => self.leaveCell(e, root, tdRoot)}
+                        />
+                    )
+                default:
+                    return (
+                        <InputTextCell
+                            value={value}
+                            onBlur={(e: any) => self.leaveCell(e, root, tdRoot)}
+                        />
+                    )
+            }
+        },
+        /**
+         * when click cell, addpend input tag to modified value
+         */
         cellEdit: (self: any) => {
             if (!self.elemProps) return;
 
@@ -182,6 +203,9 @@ const DataGrip = (props: ITableList) => {
             const input = self.createInput(tdRoot, self.elemTd, self.elemProps, tdValue);
             tdRoot.render(input);
         }
+        /**
+         * get properties of column
+         */
         , getElement: (element) => {
             const attrIndex = element.getAttribute("data-index") || null;
             const index: number = attrIndex ? parseInt(attrIndex) : -1;
@@ -189,8 +213,11 @@ const DataGrip = (props: ITableList) => {
             const elemProps = header.at(index);
             return elemProps;
         }
+        /**
+         * initialize the modification event
+         */
         , initEvent: () => {
-            var self = eventClickCell;
+            const self = eventClickCell;
             const table = tableRef.current;
             if (!table) return;
 

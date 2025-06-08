@@ -3,7 +3,8 @@ import type { RefObject } from "react"
 interface ITableList extends React.PropsWithChildren<{}> {
     colModel: ITableListColumn[],
     data?: any[],
-    ref?: RefObject<HTMLTableElement | null>
+    ref?: RefObject<HTMLTableElement | null>,
+    afterCell?: any
 }
 
 interface ITableListColumn {
