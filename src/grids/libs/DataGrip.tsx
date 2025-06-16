@@ -3,25 +3,47 @@ import React, { useEffect, useRef } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { InputTextCell, InputNumberCell } from '../../component/UIComponents';
 import type { ITableList, ITableListColumn } from './ITableList'
+import type { ChangeSet } from './TypeOfDataSet'
 import TableTh from './TableThead';
 import TableTd from './TableTd';
 import "./DataGrip.css";
 
 const DataGrip = (props: ITableList) => {
 
+    let curTrSelected: HTMLElement;
     const tableRef = useRef<HTMLTableElement>(null);
     const tableThRef = useRef<HTMLTableElement>(null);
     const tableDiv = useRef<HTMLDivElement>(null);
     const header: ITableListColumn[] = props.colModel;
     const data: any = props.data;
     const afterCell = props.afterCell;
-    let curTrSelected: HTMLElement;
+    const DataSet: {
+        Data: any
+        , Find: (index: string | undefined) => object
+    } = {
+        Data: {}
+        , Find: (index) => {
+            let seft = DataSet;
+
+            if (!index) {
+                alert("DataSet find not with index parameter NULL!")
+                return;
+            }
+
+            if (!seft.Data[index]) {
+                alert("DataSet with index not exists!")
+                return;
+            }
+
+            return seft.Data[index].current;
+        }
+    }
 
     header.push(
         { name: "", label: "", width: "auto", key: 0, classNm: 'lst-col', hidden: true }
     )
 
-    const TableListHeader = (cols: ITableListColumn[]) => {
+    const GripCreateHeader = (cols: ITableListColumn[]) => {
         return (
             cols.map((item: ITableListColumn, id: number) => {
                 return (
@@ -39,11 +61,23 @@ const DataGrip = (props: ITableList) => {
         )
     }
 
-    const TableListBody = (cols: object[], data: object[], Tag?: React.ElementType): any => {
+    const GripCreateList = (cols: object[], data: object[], Tag?: React.ElementType): any => {
+        let idv4;
         return (
-            data.map((row: any, id: any) => {
+            data.map((dataRow: any, id: any) => {
+                idv4 = uuidv4()
+                let obj: any = {}
+                const original: any = Object.assign({}, dataRow);
+                const current: any = Object.assign({}, dataRow);
+
+                current["__EntityState"] = 0
+
+                obj["original"] = original
+                obj["current"] = current
+                DataSet.Data[idv4] = obj;
+
                 return (
-                    <tr key={id} data-key={uuidv4()}>
+                    <tr key={id} data-key={idv4}>
                         {
                             cols.map((col: any, _id: any) => {
                                 return (
@@ -53,7 +87,7 @@ const DataGrip = (props: ITableList) => {
                                         index={_id}
                                         classNm={col.classNm}
                                         // htmlTag={Tag}
-                                        value={row[col.name]}>
+                                        value={dataRow[col.name]}>
                                     </TableTd>
                                 )
                             })
@@ -143,14 +177,17 @@ const DataGrip = (props: ITableList) => {
     }
 
     const eventClickCell: {
+        uuid: string | undefined;
         elemTd: HTMLElement | undefined;
         elemProps: ITableListColumn | undefined;
         leaveCell: (e: any, root: Root, tdRoot: HTMLElement) => void;
+        //afterLeaveCell: (e: any, uuid: string, dataSet: any) => void;
         createInput: (root: Root, tdRoot: HTMLElement, elemProps: ITableListColumn | undefined, value: string) => void;
         cellEdit: (elemProps: any) => void;
         getElement: (element: HTMLElement) => ITableListColumn | undefined;
         initEvent: () => void;
     } = {
+        uuid: undefined,
         elemTd: undefined,
         elemProps: undefined,
         /**
@@ -159,9 +196,10 @@ const DataGrip = (props: ITableList) => {
         leaveCell: (e: any, root: Root, tdRoot: HTMLElement) => {
             root.unmount();
             const newVal = e.target.value;
+            const self = eventClickCell;
             tdRoot.innerText = newVal;
             if (afterCell && typeof (afterCell) === "function") {
-                afterCell();
+                afterCell(e, self.uuid, DataSet);
             }
         },
         /**
@@ -207,6 +245,8 @@ const DataGrip = (props: ITableList) => {
          * get properties of column
          */
         , getElement: (element) => {
+            const self = eventClickCell;
+            self.uuid = element.closest("tr")?.getAttribute("data-key") || undefined;
             const attrIndex = element.getAttribute("data-index") || null;
             const index: number = attrIndex ? parseInt(attrIndex) : -1;
             if (index < 0) return;
@@ -255,13 +295,13 @@ const DataGrip = (props: ITableList) => {
                     <table ref={tableThRef} className="tb-fixed">
                         <thead>
                             <tr>
-                                {TableListHeader(header)}
+                                {GripCreateHeader(header)}
                             </tr>
                         </thead>
                     </table>
                     <table ref={tableRef} className="dataTable">
                         <tbody>
-                            {TableListBody(header, data)}
+                            {GripCreateList(header, data)}
                         </tbody>
                     </table>
                 </div>

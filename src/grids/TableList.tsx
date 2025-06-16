@@ -22,8 +22,8 @@ export default function ListTable(props: any) {
 	const ConfigTable: ITableList = {
 		colModel: ConfigColumn
 		, data: data
-		, afterCell: () => {
-			console.log('afterCell')
+		, afterCell: (e: any, uuid: string, DataSet: any) => {
+
 		}
 	};
 
