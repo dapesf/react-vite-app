@@ -1,6 +1,7 @@
 import dummy from '../assets/dummy'
-import type { ITableList, ITableListColumn } from './libs/ITableList'
-import { DataGrip } from './libs/DataGrip'
+import type { IGridList, IGridColumn } from './libs/IGrid'
+import type { IChangeSet } from './libs/TypeOfDataSet'
+import { DataGrid } from './libs/DataGrid'
 
 export default function ListTable(props: any) {
 
@@ -11,7 +12,7 @@ export default function ListTable(props: any) {
 		cols.push(key)
 	}
 
-	const ConfigColumn: ITableListColumn[] = [
+	const ConfigColumn: IGridColumn[] = [
 		{ name: "name", label: "name", width: "150px", key: 0, hidden: false }
 		, { name: "language", label: "language", width: "100px", key: 0, hidden: false }
 		, { name: "id", label: "id", width: "190px", key: 0, hidden: false, editCell: true }
@@ -19,15 +20,15 @@ export default function ListTable(props: any) {
 		, { name: "version", label: "version", width: "70px", key: 0, hidden: false, editCell: true, dataType: "NUMBER" }
 	]
 
-	const ConfigTable: ITableList = {
+	const ConfigTable: IGridList = {
 		colModel: ConfigColumn
 		, data: data
-		, afterCell: (e: any, uuid: string, DataSet: any) => {
+		, afterCell: (e: any, uuid: string, DataSet: IChangeSet) => {
 
 		}
 	};
 
 	return (
-		<DataGrip {...ConfigTable}></DataGrip>
+		<DataGrid {...ConfigTable}></DataGrid>
 	)
 }

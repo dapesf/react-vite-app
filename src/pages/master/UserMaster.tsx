@@ -10,9 +10,9 @@ import { Text, Input, ButtonConfirm } from '../../component/UIComponents'
 import SlideZone from '../../libs/SlideZone'
 import ToolBar from '../../libs/ToolBar'
 import style from '../css/UserMaster.module.css'
-import type { ITableList, ITableListColumn } from '../../grids/libs/ITableList'
+import type { IGridList, IGridColumn } from '../../grids/libs/IGrid'
 import dummy from '../../assets/dummy'
-import { DataGrip } from '../../grids/libs/DataGrip'
+import { DataGrid } from '../../grids/libs/DataGrid'
 import ListTable from '../../grids/TableList'
 
 export function UserMaster() {
@@ -125,7 +125,7 @@ export function UserMaster() {
 		cols.push(key)
 	}
 
-	const ConfigColumn: ITableListColumn[] = [
+	const ConfigColumn: IGridColumn[] = [
 		{ name: "name", label: "name", width: "150px", key: 0, hidden: false }
 		, { name: "language", label: "language", width: "100px", key: 0, hidden: false }
 		, { name: "id", label: "id", width: "190px", key: 0, hidden: false }
@@ -133,7 +133,7 @@ export function UserMaster() {
 		, { name: "version", label: "version", width: "70px", key: 0, hidden: false }
 	]
 
-	const ConfigTable: ITableList = {
+	const ConfigTable: IGridList = {
 		colModel: ConfigColumn
 		, data: data
 	};

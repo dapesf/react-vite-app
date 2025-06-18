@@ -1,41 +1,91 @@
 import { v4 as uuidv4 } from 'uuid';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { InputTextCell, InputNumberCell } from '../../component/UIComponents';
-import type { ITableList, ITableListColumn } from './ITableList'
-import type { ChangeSet } from './TypeOfDataSet'
+import type { IGridList, IGridColumn, IEventClickCell, IActionGridTool } from './IGrid'
+import type { IChangeSet } from './TypeOfDataSet'
 import TableTh from './TableThead';
 import TableTd from './TableTd';
-import "./DataGrip.css";
+import "./DataGrid.css";
 
-const DataGrip = (props: ITableList) => {
+const DataGrid = (props: IGridList) => {
 
+    let uuid: any = [];
     let curTrSelected: HTMLElement;
     const tableRef = useRef<HTMLTableElement>(null);
     const tableThRef = useRef<HTMLTableElement>(null);
     const tableDiv = useRef<HTMLDivElement>(null);
-    const header: ITableListColumn[] = props.colModel;
+
+    const [row, setRow] = useState([]);
+
+    const header: IGridColumn[] = props.colModel;
     const data: any = props.data;
     const afterCell = props.afterCell;
-    const DataSet: {
-        Data: any
-        , Find: (index: string | undefined) => object
-    } = {
+    const DataSet: IChangeSet = {
         Data: {}
-        , Find: (index) => {
+        /**
+         * #Find data line in DataSet with data-key
+         * @dataKey: data-key to seeking
+         */
+        , Find: (dataKey) => {
             let seft = DataSet;
 
-            if (!index) {
+            if (!dataKey) {
                 alert("DataSet find not with index parameter NULL!")
                 return;
             }
 
-            if (!seft.Data[index]) {
+            if (!seft.Data[dataKey]) {
                 alert("DataSet with index not exists!")
                 return;
             }
 
-            return seft.Data[index].current;
+            return seft.Data[dataKey].current;
+        },
+        /**
+         * #Update data line in DataSet with data-key
+         * @dataKey: data-key 
+         * @colName: property name of col
+         * @value: new value to update
+         */
+        Update: (dataKey, colName, value) => {
+            let seft = DataSet;
+
+            if (!dataKey) {
+                alert("DataSet find not with index parameter NULL!")
+                return;
+            }
+
+            if (!seft.Data[dataKey]) {
+                alert("DataSet with index not exists!")
+                return;
+            }
+
+            let obj: any;
+            obj = seft.Find(dataKey);
+            if (colName && obj[colName]) {
+                obj[colName] = value
+                obj["__EntityState"] = 16
+            }
+        },
+        /**
+         * #Delete data line in DataSet with data-key
+         * @index: data-key to remove
+         */
+        Delete: (dataKey) => {
+            let seft = DataSet;
+
+            if (!dataKey) {
+                alert("DataSet find not with index parameter NULL!")
+                return;
+            }
+
+            if (!seft.Data[dataKey]) {
+                alert("DataSet with index not exists!")
+                return;
+            }
+
+            delete DataSet.Data[dataKey];
         }
     }
 
@@ -43,9 +93,10 @@ const DataGrip = (props: ITableList) => {
         { name: "", label: "", width: "auto", key: 0, classNm: 'lst-col', hidden: true }
     )
 
-    const GripCreateHeader = (cols: ITableListColumn[]) => {
+    const GripCreateHeader = (cols: IGridColumn[]) => {
+        console.log("GripCreateHeader")
         return (
-            cols.map((item: ITableListColumn, id: number) => {
+            cols.map((item: IGridColumn, id: number) => {
                 return (
                     <TableTh
                         key={id}
@@ -61,11 +112,13 @@ const DataGrip = (props: ITableList) => {
         )
     }
 
-    const GripCreateList = (cols: object[], data: object[], Tag?: React.ElementType): any => {
+    const GripCreateList = (cols: object[], data: object[]): any => {
+        console.log("GripCreateList")
         let idv4;
         return (
             data.map((dataRow: any, id: any) => {
                 idv4 = uuidv4()
+                uuid.push(idv4);
                 let obj: any = {}
                 const original: any = Object.assign({}, dataRow);
                 const current: any = Object.assign({}, dataRow);
@@ -176,19 +229,10 @@ const DataGrip = (props: ITableList) => {
         });
     }
 
-    const eventClickCell: {
-        uuid: string | undefined;
-        elemTd: HTMLElement | undefined;
-        elemProps: ITableListColumn | undefined;
-        leaveCell: (e: any, root: Root, tdRoot: HTMLElement) => void;
-        //afterLeaveCell: (e: any, uuid: string, dataSet: any) => void;
-        createInput: (root: Root, tdRoot: HTMLElement, elemProps: ITableListColumn | undefined, value: string) => void;
-        cellEdit: (elemProps: any) => void;
-        getElement: (element: HTMLElement) => ITableListColumn | undefined;
-        initEvent: () => void;
-    } = {
+    const eventClickCell: IEventClickCell = {
         uuid: undefined,
         elemTd: undefined,
+        elemProp: undefined,
         elemProps: undefined,
         /**
          * leave cell event
@@ -198,9 +242,11 @@ const DataGrip = (props: ITableList) => {
             const newVal = e.target.value;
             const self = eventClickCell;
             tdRoot.innerText = newVal;
-            if (afterCell && typeof (afterCell) === "function") {
+            if (self.uuid)
+                DataSet.Update(self.uuid, self.elemProps?.name, newVal);
+
+            if (afterCell && typeof (afterCell) === "function")
                 afterCell(e, self.uuid, DataSet);
-            }
         },
         /**
          * create input corresponding data type
@@ -271,26 +317,41 @@ const DataGrip = (props: ITableList) => {
                 self.elemTd = element;
                 self.elemProps = self.getElement(element);
                 self.cellEdit(self)
-
+                console.log("initEvent DataGrip Run")
                 return;
             });
         }
     }
 
+    const actionGridTool: IActionGridTool = {
+        DeleteRow: (dataKey) => {
+            const table = tableRef.current;
+            if (!table)
+                return;
+
+            const tr = table.getElementsByClassName("selected")
+            console.log(tr)
+            //if (tr)
+            //table.removeChild(tr)
+        }
+    }
+
     useEffect(() => {
+        //setRow(uuid)
         eventDragCol();
         eventClickRow();
         eventClickCell.initEvent();
+        console.log("useEffect DataGrip Run")
     }, []);
 
     return (
         <div className='grip-div'>
             <div ref={tableDiv} className="tb-list">
-                {/* <div className='tb-fixed'>
-                <button>Add row</button>
-                <button>Delete row</button>
-                <button>Get row</button>
-            </div> */}
+                <div className='tb-fixed'>
+                    <button>Add row</button>
+                    <button onClick={(e: any) => { actionGridTool.DeleteRow("") }}>Delete row</button>
+                    <button>Get row</button>
+                </div>
                 <div className="tb-container">
                     <table ref={tableThRef} className="tb-fixed">
                         <thead>
@@ -310,4 +371,4 @@ const DataGrip = (props: ITableList) => {
     )
 }
 
-export { DataGrip }
+export { DataGrid }

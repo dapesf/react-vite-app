@@ -1,6 +1,6 @@
-import type { ITableListColumn } from './ITableList'
+import type { IGridColumn } from './IGrid'
 
-export default function TableTd(props: ITableListColumn) {
+export default function TableTd(props: IGridColumn) {
     const ClassName = props.classNm ?? undefined
     const Ref = props.elementRef ?? null;
     const Value = props.value ?? "";
