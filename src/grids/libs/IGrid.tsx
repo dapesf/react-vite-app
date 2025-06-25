@@ -3,13 +3,14 @@ import { type Root } from 'react-dom/client';
 
 interface IGridList extends React.PropsWithChildren<{}> {
     colModel: IGridColumn[],
-    data?: any[],
+    data: any[],
     ref?: RefObject<HTMLTableElement | null>,
     afterCell?: any
 }
 
 interface IGridColumn {
-    name?: string,
+    idv4?: string,
+    name: string,
     label?: string,
     width?: string,
     dataType?: string,
