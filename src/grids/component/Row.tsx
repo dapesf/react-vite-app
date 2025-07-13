@@ -1,12 +1,12 @@
 import { memo } from 'react';
-import type { IGridColumn } from './IGrid'
+import type { IGridColumn } from '../interface/IGrid'
 
 const Row = memo(({ cols, data }: { cols: IGridColumn[], data: any }) => {
+    console.log("render Row");
     return (
         <tr key={data["idv4"]} data-key={data["idv4"]}>
             {
                 cols.map((col: IGridColumn, id: number) => {
-                    console.log("re render Row");
                     let style = {
                         width: col.width,
                         hidden: col.hidden,

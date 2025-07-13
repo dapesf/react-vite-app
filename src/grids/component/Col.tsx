@@ -1,13 +1,13 @@
 
 import { memo } from "react";
-import type { IGridColumn } from "./IGrid";
+import type { IGridColumn } from "../interface/IGrid";
 
 const Col = memo(({ props }: { props: IGridColumn }) => {
     const style = {
         width: props.width,
         hidden: props.hidden,
     };
-    console.log("re render Col");
+    console.log("render Col");
     return (
         <th
             style={style}

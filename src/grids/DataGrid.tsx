@@ -1,65 +1,23 @@
 import { v4 as uuidv4 } from 'uuid';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { InputTextCell, InputNumberCell } from '../../component/UIComponents';
-import type { IGridList, IGridColumn, IEventClickCell, IActionGridTool } from './IGrid'
-import type { IChangeSet } from './TypeOfDataSet'
-import Col from './Col';
-import Row from './Row';
+import { InputTextCell, InputNumberCell } from '../component/UIComponents';
+import type { IGridList, IGridColumn, IEventClickCell, IActionGridTool } from './interface/IGrid'
+import type { IChangeSet } from './interface/ITypeDataSet'
+import Col from './component/Col';
+import Row from './component/Row';
 import "./DataGrid.css";
-
-const dataRow = [
-    {
-        "name": "Adeel Solangi",
-        "language": "Sindhi",
-        "id": "V59OF92YF627HFY0",
-        "bio": "Donec lobortis eleifend condimentum. Cras dictum dolor lacinia lectus vehicula rutrum. Maecenas quis nisi nunc. Nam tristique feugiat est vitae mollis. Maecenas quis nisi nunc.",
-        "version": 6.1
-    },
-    {
-        "name": "Afzal Ghaffar",
-        "language": "Sindhi",
-        "id": "ENTOCR13RSCLZ6KU",
-        "bio": "Aliquam sollicitudin ante ligula, eget malesuada nibh efficitur et. Pellentesque massa sem, scelerisque sit amet odio id, cursus tempor urna. Etiam congue dignissim volutpat. Vestibulum pharetra libero et velit gravida euismod.",
-        "version": 1.88
-    },
-    {
-        "name": "Aamir Solangi",
-        "language": "Sindhi",
-        "id": "IAKPO3R4761JDRVG",
-        "bio": "Vestibulum pharetra libero et velit gravida euismod. Quisque mauris ligula, efficitur porttitor sodales ac, lacinia non ex. Fusce eu ultrices elit, vel posuere neque.",
-        "version": 7.27
-    },]
-
-const colModel: IGridColumn[] = [
-    { name: "name", label: "name", index: 0, width: "150px", key: 0, hidden: false }
-    , { name: "language", label: "language", index: 1, width: "100px", key: 0, hidden: false }
-    , { name: "id", label: "id", index: 2, width: "190px", key: 0, hidden: false, editCell: true }
-    , { name: "bio", label: "bio", index: 3, width: "550px", key: 0, hidden: false, editCell: true }
-    , { name: "version", label: "version", index: 4, width: "70px", key: 0, hidden: false, editCell: true, dataType: "NUMBER" }
-    , { name: "", label: "", index: 5, width: "auto", key: 0, classNm: 'lst-col', hidden: true }
-]
-
-const numericUUID = () => {
-    return parseFloat(Array.from({ length: 15 }, () => Math.floor(Math.random() * 10)).join(''));
-};
-
-dataRow.forEach((element: IGridColumn) => {
-    element.key = numericUUID();
-    element.idv4 = uuidv4()
-});
 
 const DataGrid = (props: IGridList) => {
 
-    let uuid: any = [];
     let curTrSelected: HTMLElement;
     const tableRef = useRef<HTMLTableElement>(null);
     const tableThRef = useRef<HTMLTableElement>(null);
     const tableDiv = useRef<HTMLDivElement>(null);
     const afterCell = props.afterCell;
 
-    const [data, setData] = useState<any>(dataRow);
-    const [cols, setCols] = useState<IGridColumn[]>(colModel);
+    const [data, setData] = useState<any>(props.data);
+    const [cols, setCols] = useState<IGridColumn[]>(props.colModel);
 
     const DataSet: IChangeSet = {
         Data: {}
@@ -145,51 +103,6 @@ const DataGrid = (props: IGridList) => {
     }
 
     DataSet.Initialization();
-
-    // const GripCreateHeader = (cols: IGridColumn[]) => {
-    //     return (
-    //         cols.map((item: IGridColumn, id: number) => {
-    //             console.log("loop GripCreateHeader")
-    //             return (
-    //                 <Col
-    //                     //key={item.index + item.id}
-    //                     name={item.name}
-    //                     label={item.label}
-    //                     width={item.width}
-    //                     index={id}
-    //                     classNm={item.classNm}
-    //                     hidden={item.hidden} />
-    //             )
-    //         })
-    //     )
-    // }
-
-    // const GripCreateList = () => {
-    //     //console.log("GripCreateList")
-    //     return (
-    //         data.map((dataRow: any, id: any) => {
-    //             console.log("GripCreateList lopp")
-    //             return (
-    //                 <tr key={dataRow.key} data-key={dataRow.idv4}>
-    //                     {
-    //                         header.map((col: any, _id: any) => {
-    //                             return (
-    //                                 <Row
-    //                                     key={(dataRow.key + _id)}
-    //                                     width={col.width}
-    //                                     index={_id}
-    //                                     classNm={col.classNm}
-    //                                     value={dataRow[col.name]} />
-    //                             )
-    //                         })
-    //                     }
-    //                 </tr >
-    //             )
-    //         })
-    //     )
-    // }
-
-    //const MemoGripCreateList = memo(GripCreateList)
 
     const handleMouseDown = (e: MouseEvent, th: HTMLTableCellElement, tableHeight: any) => {
 
@@ -385,28 +298,27 @@ const DataGrid = (props: IGridList) => {
         }
     }
 
-    const DeleteRow = useCallback((dataKey: any) => {
+    const DeleteRow = () => {
         const table = tableRef.current;
-        if (!table)
-            return;
+        if (!table) return;
 
         const tr = table.getElementsByClassName("selected")
-        if (!tr)
-            return
-        let id: any;
-        for (let i = 0; i <= 0; i++) {
-            const el = tr[i];
-            id = el.getAttribute("data-key");
-            if (id) break;
-        }
+        if (!tr) return
 
-        //const list = data.filter((row: any) => row.idv4 !== id)
-        //const list = data.filter((row: any) => row.idv4 !== id)
-        //setData(list);
+        let id: any;
+        const el = tr[0];
+        id = el.getAttribute("data-key");
+        if (!id) return
+
+        const index = data.findIndex((item: any) => item.idv4 === id);
+        const nextTr = data[index + 1].idv4
+
         setData((data: any) => {
             return data.filter((row: any) => row.idv4 !== id);
         });
-    }, [])
+        console.log("DeleteRow run!")
+        console.log(nextTr)
+    }
 
     useEffect(() => {
         //setRow(uuid)
@@ -421,7 +333,7 @@ const DataGrid = (props: IGridList) => {
             <div ref={tableDiv} className="tb-list">
                 <div className='tb-fixed'>
                     <button>Add row</button>
-                    <button onClick={(e: any) => { DeleteRow("") }}>Delete row</button>
+                    <button onClick={(e: any) => { DeleteRow() }}>Delete row</button>
                     <button>Get row</button>
                 </div>
                 <div className="tb-container">

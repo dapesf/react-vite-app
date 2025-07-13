@@ -10,9 +10,9 @@ import { Text, Input, ButtonConfirm } from '../../component/UIComponents'
 import SlideZone from '../../libs/SlideZone'
 import ToolBar from '../../libs/ToolBar'
 import style from '../css/UserMaster.module.css'
-import type { IGridList, IGridColumn } from '../../grids/libs/IGrid'
+import type { IGridList, IGridColumn } from '../../grids/interface/IGrid'
 import dummy from '../../assets/dummy'
-import { DataGrid } from '../../grids/libs/DataGrid'
+import { DataGrid } from '../../grids/DataGrid'
 import ListTable from '../../grids/TableList'
 
 export function UserMaster() {
