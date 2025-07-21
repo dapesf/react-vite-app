@@ -5,6 +5,7 @@ import { InputTextCell, InputNumberCell } from '../component/UIComponents';
 import type { IGridList, IGridColumn, IEventClickCell, IActionGridTool } from './interface/IGrid'
 import type { IChangeSet } from './interface/ITypeDataSet'
 import Col from './component/Col';
+import FakeCol from './component/FakeCol';
 import Row from './component/Row';
 import "./DataGrid.css";
 
@@ -12,6 +13,8 @@ const DataGrid = (props: IGridList) => {
 
     let curTrSelected: HTMLElement;
     const tableRef = useRef<HTMLTableElement>(null);
+    const tHeadRef = useRef<HTMLTableSectionElement>(null);
+    const tBodyRef = useRef<HTMLTableSectionElement>(null);
     const tableThRef = useRef<HTMLTableElement>(null);
     const tableDiv = useRef<HTMLDivElement>(null);
     const afterCell = props.afterCell;
@@ -137,10 +140,10 @@ const DataGrid = (props: IGridList) => {
     }
 
     const handleTableTdResize = (index: number, newWidth: string) => {
-        const table = tableRef.current;
-        if (!table)
+        const tHead = tHeadRef.current;
+        if (!tHead)
             return;
-        const tds = table.querySelectorAll("td");
+        const tds = tHead.querySelectorAll("th");
         tds[index].style.width = newWidth;
     };
 
@@ -299,25 +302,39 @@ const DataGrid = (props: IGridList) => {
     }
 
     const DeleteRow = () => {
-        const table = tableRef.current;
-        if (!table) return;
+        const tbody = tBodyRef.current;
+        if (!tbody) return;
 
-        const tr = table.getElementsByClassName("selected")
-        if (!tr) return
+        let trs = Array.from(tbody.children)
+        if (trs.length == 0) return
 
+        let i: number = 0
         let id: any;
-        const el = tr[0];
-        id = el.getAttribute("data-key");
+        let trNext: any = null;
+        let trPrev: any = null;
+
+        while (i <= trs.length) {
+            if (!(trs[i].classList.contains("selected"))) {
+                i += 1;
+                continue;
+            }
+
+            id = trs[i].getAttribute("data-key");
+            if (trs[i - 1]) trPrev = trs[i - 1]
+            if (trs[i + 1]) trNext = trs[i + 1]
+            break;
+        }
+
         if (!id) return
 
-        const index = data.findIndex((item: any) => item.idv4 === id);
-        const nextTr = data[index + 1].idv4
-
         setData((data: any) => {
+            if (trNext)
+                trNext.click();
+            else if (trPrev)
+                trPrev.click();
+
             return data.filter((row: any) => row.idv4 !== id);
         });
-        console.log("DeleteRow run!")
-        console.log(nextTr)
     }
 
     useEffect(() => {
@@ -350,10 +367,22 @@ const DataGrid = (props: IGridList) => {
                         </thead>
                     </table>
                     <table ref={tableRef} className="dataTable">
-                        <tbody>
+                        <thead ref={tHeadRef} style={{ visibility: 'collapse' }}>
+                            <tr >
+                                {
+                                    cols.map((item: IGridColumn, index: number) => (
+                                        <FakeCol
+                                            key={(item.idv4 ?? "") + index}
+                                            props={item} />
+                                    ))
+                                }
+                            </tr>
+                        </thead>
+                        <tbody ref={tBodyRef}>
                             {
                                 data.map((item: IGridColumn, index: number) => (
-                                    <Row key={item.idv4}
+                                    <Row
+                                        key={item.idv4}
                                         cols={cols}
                                         data={item} />
                                 ))
@@ -362,7 +391,7 @@ const DataGrid = (props: IGridList) => {
                     </table>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 
