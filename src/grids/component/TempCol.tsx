@@ -2,12 +2,12 @@
 import { memo } from "react";
 import type { IGridColumn } from "../interface/IGrid";
 
-const FakeCol = memo(({ props }: { props: IGridColumn }) => {
+const TempCol = memo(({ props }: { props: IGridColumn }) => {
 	const style = {
 		width: props.width,
 		hidden: true,
 	};
-	console.log("render FakeCol");
+	console.log("render ReSizeCol");
 	return (
 		<th
 			style={style}>
@@ -15,4 +15,4 @@ const FakeCol = memo(({ props }: { props: IGridColumn }) => {
 	)
 })
 
-export default FakeCol
+export default TempCol

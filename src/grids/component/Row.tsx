@@ -7,15 +7,13 @@ const Row = memo(({ cols, data }: { cols: IGridColumn[], data: any }) => {
         <tr key={data["idv4"]} data-key={data["idv4"]}>
             {
                 cols.map((col: IGridColumn, id: number) => {
-                    let style = {
-                        width: col.width,
-                        hidden: col.hidden,
-                    };
+                    let Cls = {};
 
                     return (
                         <td
                             key={data["idv4"] + col.index}
-                            style={style}
+                            hidden={col.hidden}
+                            style={Cls}
                             className={col.classNm}
                             data-index={col.index}>
                             {data[col.name]}

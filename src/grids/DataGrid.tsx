@@ -1,11 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { InputTextCell, InputNumberCell } from '../component/UIComponents';
 import type { IGridList, IGridColumn, IEventClickCell, IActionGridTool } from './interface/IGrid'
 import type { IChangeSet } from './interface/ITypeDataSet'
 import Col from './component/Col';
-import FakeCol from './component/FakeCol';
+import TempCol from './component/TempCol';
+import TempRow from './component/TempRow';
 import Row from './component/Row';
 import "./DataGrid.css";
 
@@ -15,6 +16,7 @@ const DataGrid = (props: IGridList) => {
     const tableRef = useRef<HTMLTableElement>(null);
     const tHeadRef = useRef<HTMLTableSectionElement>(null);
     const tBodyRef = useRef<HTMLTableSectionElement>(null);
+    const rowTempRef = useRef<HTMLTableRowElement>(null);
     const tableThRef = useRef<HTMLTableElement>(null);
     const tableDiv = useRef<HTMLDivElement>(null);
     const afterCell = props.afterCell;
@@ -337,6 +339,21 @@ const DataGrid = (props: IGridList) => {
         });
     }
 
+    const AddRow = () => {
+        const rowTemp = rowTempRef.current;
+        if (!rowTemp) return;
+
+        let id: any = uuidv4();
+
+        //cols.map()
+
+        if (!id) return
+
+        setData((data: any) => {
+            return data.filter((row: any) => row.idv4 !== id);
+        });
+    }
+
     useEffect(() => {
         //setRow(uuid)
         eventDragCol();
@@ -349,7 +366,7 @@ const DataGrid = (props: IGridList) => {
         <div className='grip-div'>
             <div ref={tableDiv} className="tb-list">
                 <div className='tb-fixed'>
-                    <button>Add row</button>
+                    <button onClick={(e: any) => { AddRow() }}>Add row</button>
                     <button onClick={(e: any) => { DeleteRow() }}>Delete row</button>
                     <button>Get row</button>
                 </div>
@@ -367,11 +384,11 @@ const DataGrid = (props: IGridList) => {
                         </thead>
                     </table>
                     <table ref={tableRef} className="dataTable">
-                        <thead ref={tHeadRef} style={{ visibility: 'collapse' }}>
+                        <thead ref={tHeadRef} className='col-resize'>
                             <tr >
                                 {
                                     cols.map((item: IGridColumn, index: number) => (
-                                        <FakeCol
+                                        <TempCol
                                             key={(item.idv4 ?? "") + index}
                                             props={item} />
                                     ))
@@ -379,6 +396,14 @@ const DataGrid = (props: IGridList) => {
                             </tr>
                         </thead>
                         <tbody ref={tBodyRef}>
+                            <tr data-key='temp-row' ref={rowTempRef}>
+                                {
+                                    cols.map((item: IGridColumn, index: number) => (
+                                        <TempRow key={(item.idv4 ?? "") + index}
+                                            props={item} />
+                                    ))
+                                }
+                            </tr>
                             {
                                 data.map((item: IGridColumn, index: number) => (
                                     <Row
