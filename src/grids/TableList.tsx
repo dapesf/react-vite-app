@@ -19,7 +19,18 @@ export default function ListTable() {
 	const ConfigTable = confListGrid({
 		colModel: colModel
 		, data: data
-		, afterCell: (e: any, uuid: string, DataSet: IChangeSet) => { }
+		, afterCell: (e: any, uuid: string, DataSet: IChangeSet) => {
+			return true;
+		}
+		, addRow: (data: any) => {
+			data = {
+				"bio": "test",
+				"key": "asdasfasdaw",
+				"version": 1.11
+			}
+			data["bio"] = "1232";
+			return true;
+		}
 	});
 
 	return (

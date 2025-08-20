@@ -19,7 +19,12 @@ const DataGrid = (props: IGridList) => {
     const rowTempRef = useRef<HTMLTableRowElement>(null);
     const tableThRef = useRef<HTMLTableElement>(null);
     const tableDiv = useRef<HTMLDivElement>(null);
+
+    const objCol: string[] = props.colModel.map((item) => item.name);
+
     const afterCell = props.afterCell;
+    const addRow = props.addRow;
+    const delRow = props.delRow;
 
     const [data, setData] = useState<any>(props.data);
     const [cols, setCols] = useState<IGridColumn[]>(props.colModel);
@@ -310,6 +315,12 @@ const DataGrid = (props: IGridList) => {
         let trs = Array.from(tbody.children)
         if (trs.length == 0) return
 
+        let callback: boolean = true;
+        if (delRow && typeof (delRow) === "function")
+            callback = delRow();
+
+        if (!callback) return;
+
         let i: number = 0
         let id: any;
         let trNext: any = null;
@@ -340,18 +351,34 @@ const DataGrid = (props: IGridList) => {
     }
 
     const AddRow = () => {
-        const rowTemp = rowTempRef.current;
-        if (!rowTemp) return;
+        let callback: boolean = true;
+        let row: Record<string, any> = {};
+        if (addRow && typeof (addRow) === "function")
+            callback = addRow(row);
+
+        if (!callback) return;
+
+        //clone column name
+        let frameRow: any = {};
+        objCol.forEach(element => {
+            if (element.trim().length > 0) {
+                frameRow[element] = "";
+            }
+        });
+
+        //assgin row to frameRow
+        for (let key in row) {
+            if (frameRow[key] != undefined) {
+                frameRow[key] = row[key]
+            }
+        }
+        console.log(frameRow);
 
         let id: any = uuidv4();
+        frameRow["idv4"] = id;
+        frameRow["key"] = id + 1;
 
-        //cols.map()
-
-        if (!id) return
-
-        setData((data: any) => {
-            return data.filter((row: any) => row.idv4 !== id);
-        });
+        setData([...data, frameRow]);
     }
 
     useEffect(() => {

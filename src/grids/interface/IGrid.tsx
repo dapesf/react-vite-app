@@ -1,11 +1,14 @@
 import type { RefObject } from "react"
 import { type Root } from 'react-dom/client';
+import type { IChangeSet } from "./ITypeDataSet";
 
 interface IGridList extends React.PropsWithChildren<{}> {
     colModel: IGridColumn[],
     data: any[],
     ref?: RefObject<HTMLTableElement | null>,
-    afterCell?: any
+    afterCell?: (e: any, uuid: string, DataSet: IChangeSet) => boolean,
+    addRow?: (data: object) => boolean,
+    delRow?: () => boolean
 }
 
 interface IGridColumn {
