@@ -7,7 +7,7 @@ interface IGridList extends React.PropsWithChildren<{}> {
     data: any[],
     ref?: RefObject<HTMLTableElement | null>,
     afterCell?: (e: any, uuid: string, DataSet: IChangeSet) => boolean,
-    addRow?: (data: object) => boolean,
+    addRow?: (data: object) => {},
     delRow?: () => boolean
 }
 
@@ -45,8 +45,13 @@ interface IEventClickCell {
     initEvent: () => void;
 }
 
-interface IActionGridTool {
-    DeleteRow: (dataKey: string | undefined) => void;
+interface IGirdActivity {
+    FindRow: () => void;
 }
 
-export type { IGridList, IGridColumn, IEventClickCell, IActionGridTool }
+interface IActionGridTool {
+    DeleteRow: () => void;
+    AddRow: () => void;
+}
+
+export type { IGridList, IGridColumn, IEventClickCell, IActionGridTool, IGirdActivity }

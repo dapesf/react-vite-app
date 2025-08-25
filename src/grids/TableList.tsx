@@ -22,14 +22,17 @@ export default function ListTable() {
 		, afterCell: (e: any, uuid: string, DataSet: IChangeSet) => {
 			return true;
 		}
-		, addRow: (data: any) => {
+		, addRow: (data: Record<string, any>) => {
 			data = {
+				"name": "test ne",
+				"language": "JP",
+				"id": "XXXXX",
 				"bio": "test",
 				"key": "asdasfasdaw",
-				"version": 1.11
+				"version": 1.15
 			}
-			data["bio"] = "1232";
-			return true;
+
+			return data;
 		}
 	});
 

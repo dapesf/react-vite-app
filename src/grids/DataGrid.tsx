@@ -2,13 +2,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { InputTextCell, InputNumberCell } from '../component/UIComponents';
-import type { IGridList, IGridColumn, IEventClickCell, IActionGridTool } from './interface/IGrid'
+import type { IGridList, IGridColumn, IEventClickCell, IActionGridTool, IGirdActivity } from './interface/IGrid'
 import type { IChangeSet } from './interface/ITypeDataSet'
 import Col from './component/Col';
 import TempCol from './component/TempCol';
 import TempRow from './component/TempRow';
 import Row from './component/Row';
 import "./DataGrid.css";
+
+const randUUID = () => {
+    return parseFloat(Array.from({ length: 15 }, () => Math.floor(Math.random() * 10)).join(''));
+};
 
 const DataGrid = (props: IGridList) => {
 
@@ -49,6 +53,35 @@ const DataGrid = (props: IGridList) => {
             }
 
             return seft.Data[dataKey].current;
+        },
+        /**
+         * #Create data line in DataSet with data-key
+         * @dataKey: data-key 
+         * @colName: property name of col
+         * @value: new value to update
+         */
+        Create: (dataKey, object) => {
+            let seft = DataSet;
+
+            if (!dataKey) {
+                alert("data key is NULL!")
+                return;
+            }
+
+            if (seft.Data[dataKey]) {
+                alert("data key is already exists!")
+                return;
+            }
+
+            let obj: any = {}
+            const original: any = Object.assign({}, object);
+            const current: any = Object.assign({}, object);
+
+            current["__EntityState"] = 4
+            obj["original"] = original
+            obj["current"] = current
+
+            DataSet.Data[original.idv4 ?? 0] = obj;
         },
         /**
          * #Update data line in DataSet with data-key
@@ -99,7 +132,7 @@ const DataGrid = (props: IGridList) => {
             console.log("DataSet Initialization")
             data.map((dataRow: any, id: any) => {
                 let obj: any = {}
-                const original: IGridColumn = Object.assign({}, dataRow);
+                const original: any = Object.assign({}, dataRow);
                 const current: any = Object.assign({}, dataRow);
 
                 current["__EntityState"] = 0
@@ -207,6 +240,8 @@ const DataGrid = (props: IGridList) => {
             tdRoot.innerText = newVal;
             if (self.uuid)
                 DataSet.Update(self.uuid, self.elemProps?.name, newVal);
+            else
+                return;
 
             if (afterCell && typeof (afterCell) === "function")
                 afterCell(e, self.uuid, DataSet);
@@ -286,99 +321,84 @@ const DataGrid = (props: IGridList) => {
         }
     }
 
-    const actionGridTool: IActionGridTool = {
-        DeleteRow: (dataKey) => {
-            const table = tableRef.current;
-            if (!table)
-                return;
+    const GridActivity: IGirdActivity = {
+        FindRow: () => {
 
-            const tr = table.getElementsByClassName("selected")
-            if (!tr)
-                return
+        }
+    }
+
+    const GridActionTool: IActionGridTool = {
+        DeleteRow: () => {
+            const tbody = tBodyRef.current;
+            if (!tbody) return;
+
+            let trs = Array.from(tbody.children)
+            if (trs.length == 0) return
+
+            let callback: boolean = true;
+            if (delRow && typeof (delRow) === "function")
+                callback = delRow();
+
+            if (!callback) return;
+
+            let i: number = 0
             let id: any;
-            for (let i = 0; i <= 0; i++) {
-                const el = tr[i];
-                id = el.getAttribute("data-key");
-                if (id) break;
+            let trNext: any = null;
+            let trPrev: any = null;
+
+            while (i <= trs.length) {
+                if (!(trs[i].classList.contains("selected"))) {
+                    i += 1;
+                    continue;
+                }
+
+                id = trs[i].getAttribute("data-key");
+                if (trs[i - 1]) trPrev = trs[i - 1]
+                if (trs[i + 1]) trNext = trs[i + 1]
+                break;
             }
 
-            //const list = data.filter((row: any) => row.idv4 !== id)
-            const list = data.filter((row: any) => row.idv4 !== id)
-            setData(list);
+            if (!id) return
+
+            setData((data: any) => {
+                if (trNext)
+                    trNext.click();
+                else if (trPrev)
+                    trPrev.click();
+
+                return data.filter((row: any) => row.idv4 !== id);
+            });
+        },
+        AddRow: () => {
+            let callback: any = {};
+            let row: Record<string, any> = {};
+            if (addRow && typeof (addRow) === "function")
+                callback = addRow(row);
+
+            if (!callback) return;
+
+            //clone column name
+            let fRow: any = {};
+            objCol.forEach(element => {
+                if (element.trim().length > 0) {
+                    fRow[element] = "";
+                }
+            });
+
+            //assgin row to fRow
+            for (let key in callback) {
+                if (fRow[key] != undefined) {
+                    fRow[key] = callback[key]
+                }
+            }
+
+            let id: any = uuidv4();
+            fRow["idv4"] = id;
+            fRow["key"] = randUUID();
+
+            setData([...data, fRow]);
+            DataSet.Create(id, fRow);
         }
-    }
-
-    const DeleteRow = () => {
-        const tbody = tBodyRef.current;
-        if (!tbody) return;
-
-        let trs = Array.from(tbody.children)
-        if (trs.length == 0) return
-
-        let callback: boolean = true;
-        if (delRow && typeof (delRow) === "function")
-            callback = delRow();
-
-        if (!callback) return;
-
-        let i: number = 0
-        let id: any;
-        let trNext: any = null;
-        let trPrev: any = null;
-
-        while (i <= trs.length) {
-            if (!(trs[i].classList.contains("selected"))) {
-                i += 1;
-                continue;
-            }
-
-            id = trs[i].getAttribute("data-key");
-            if (trs[i - 1]) trPrev = trs[i - 1]
-            if (trs[i + 1]) trNext = trs[i + 1]
-            break;
-        }
-
-        if (!id) return
-
-        setData((data: any) => {
-            if (trNext)
-                trNext.click();
-            else if (trPrev)
-                trPrev.click();
-
-            return data.filter((row: any) => row.idv4 !== id);
-        });
-    }
-
-    const AddRow = () => {
-        let callback: boolean = true;
-        let row: Record<string, any> = {};
-        if (addRow && typeof (addRow) === "function")
-            callback = addRow(row);
-
-        if (!callback) return;
-
-        //clone column name
-        let frameRow: any = {};
-        objCol.forEach(element => {
-            if (element.trim().length > 0) {
-                frameRow[element] = "";
-            }
-        });
-
-        //assgin row to frameRow
-        for (let key in row) {
-            if (frameRow[key] != undefined) {
-                frameRow[key] = row[key]
-            }
-        }
-        console.log(frameRow);
-
-        let id: any = uuidv4();
-        frameRow["idv4"] = id;
-        frameRow["key"] = id + 1;
-
-        setData([...data, frameRow]);
     }
 
     useEffect(() => {
@@ -393,8 +413,8 @@ const DataGrid = (props: IGridList) => {
         <div className='grip-div'>
             <div ref={tableDiv} className="tb-list">
                 <div className='tb-fixed'>
-                    <button onClick={(e: any) => { AddRow() }}>Add row</button>
-                    <button onClick={(e: any) => { DeleteRow() }}>Delete row</button>
+                    <button onClick={(e: any) => { GridActionTool.AddRow() }}>Add row</button>
+                    <button onClick={(e: any) => { GridActionTool.DeleteRow() }}>Delete row</button>
                     <button>Get row</button>
                 </div>
                 <div className="tb-container">
