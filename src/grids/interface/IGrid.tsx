@@ -46,7 +46,8 @@ interface IEventClickCell {
 }
 
 interface IGirdActivity {
-    FindRow: () => void;
+    FindRow: (dataKey: any) => void;
+    ClickRow: (dataKey: string | undefined) => void;
 }
 
 interface IActionGridTool {

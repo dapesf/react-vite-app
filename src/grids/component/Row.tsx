@@ -1,10 +1,21 @@
 import { memo } from 'react';
 import type { IGridColumn } from '../interface/IGrid'
 
-const Row = memo(({ cols, data }: { cols: IGridColumn[], data: any }) => {
+type RowProps = {
+    cols: IGridColumn[];
+    data: any;
+    classNm: string | undefined;
+    clickHighLightEvent: (id: string) => void;
+};
+
+const Row = memo(({ cols, data, classNm, clickHighLightEvent }: RowProps) => {
     console.log("render Row");
     return (
-        <tr key={data["idv4"]} data-key={data["idv4"]}>
+        <tr
+            onClick={() => clickHighLightEvent(data["idv4"])}
+            className={classNm ? classNm : undefined}
+            key={data["idv4"]}
+            data-key={data["idv4"]}>
             {
                 cols.map((col: IGridColumn, id: number) => {
                     let Cls = {};

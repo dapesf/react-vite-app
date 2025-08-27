@@ -52,7 +52,7 @@ th {
 .tb-container {
     position: relative;
     /* temp code */
-    height: 200px;
+    height: 300px;
     overflow-y: scroll;
     background: #ffffff;
 }

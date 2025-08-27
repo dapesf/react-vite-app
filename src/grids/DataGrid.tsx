@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { InputTextCell, InputNumberCell } from '../component/UIComponents';
 import type { IGridList, IGridColumn, IEventClickCell, IActionGridTool, IGirdActivity } from './interface/IGrid'
@@ -32,6 +32,7 @@ const DataGrid = (props: IGridList) => {
 
     const [data, setData] = useState<any>(props.data);
     const [cols, setCols] = useState<IGridColumn[]>(props.colModel);
+    const [activeRow, setActiveRow] = useState<string>();
 
     const DataSet: IChangeSet = {
         Data: {}
@@ -322,9 +323,15 @@ const DataGrid = (props: IGridList) => {
     }
 
     const GridActivity: IGirdActivity = {
-        FindRow: () => {
-
-        }
+        FindRow: (dataKey) => {
+            if (!dataKey) return;
+            const grid = tableRef.current;
+            if (!grid) return;
+        },
+        ClickRow: useCallback((dataKey) => {
+            if (!dataKey) return;
+            setActiveRow(dataKey);
+        }, [])
     }
 
     const GridActionTool: IActionGridTool = {
@@ -396,17 +403,18 @@ const DataGrid = (props: IGridList) => {
             fRow["idv4"] = id;
             fRow["key"] = randUUID();
 
+            setActiveRow(id);
             setData([...data, fRow]);
             DataSet.Create(id, fRow);
         }
     }
 
     useEffect(() => {
+        console.log("useEffect DataGrip Run")
         //setRow(uuid)
         eventDragCol();
-        eventClickRow();
+        //eventClickRow();
         eventClickCell.initEvent();
-        console.log("useEffect DataGrip Run")
     }, []);
 
     return (
@@ -454,6 +462,8 @@ const DataGrid = (props: IGridList) => {
                             {
                                 data.map((item: IGridColumn, index: number) => (
                                     <Row
+                                        clickHighLightEvent={GridActivity.ClickRow}
+                                        classNm={activeRow == item.idv4 ? "selected" : undefined}
                                         key={item.idv4}
                                         cols={cols}
                                         data={item} />
