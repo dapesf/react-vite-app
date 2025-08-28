@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { InputTextCell, InputNumberCell } from '../component/UIComponents';
 import type { IGridList, IGridColumn, IEventClickCell, IActionGridTool, IGirdActivity } from './interface/IGrid'
@@ -13,6 +13,117 @@ import "./DataGrid.css";
 const randUUID = () => {
     return parseFloat(Array.from({ length: 15 }, () => Math.floor(Math.random() * 10)).join(''));
 };
+
+const DataSet: IChangeSet = {
+    Data: {}
+    /**
+     * #Find data line in DataSet with data-key
+     * @dataKey: data-key to seeking
+     */
+    , Find: (dataKey) => {
+        let seft = DataSet;
+
+        if (!dataKey) {
+            alert("DataSet find not with index parameter NULL!")
+            return;
+        }
+
+        if (!seft.Data[dataKey]) {
+            alert("DataSet with index not exists!")
+            return;
+        }
+
+        return seft.Data[dataKey].current;
+    },
+    /**
+     * #Create data line in DataSet with data-key
+     * @dataKey: data-key 
+     * @colName: property name of col
+     * @value: new value to update
+     */
+    Create: (dataKey, object) => {
+        let seft = DataSet;
+
+        if (!dataKey) {
+            alert("data key is NULL!")
+            return;
+        }
+
+        if (seft.Data[dataKey]) {
+            alert("data key is already exists!")
+            return;
+        }
+
+        let obj: any = {}
+        const original: any = Object.assign({}, object);
+        const current: any = Object.assign({}, object);
+
+        current["__EntityState"] = 4
+        obj["original"] = original
+        obj["current"] = current
+
+        seft.Data[dataKey] = obj;
+    },
+    /**
+     * #Update data line in DataSet with data-key
+     * @dataKey: data-key 
+     * @colName: property name of col
+     * @value: new value to update
+     */
+    Update: (dataKey, colName, value) => {
+        let seft = DataSet;
+
+        if (!dataKey) {
+            alert("DataSet find not with index parameter NULL!")
+            return;
+        }
+
+        if (!seft.Data[dataKey]) {
+            alert("DataSet with index not exists!")
+            return;
+        }
+
+        let obj: any;
+        obj = seft.Find(dataKey);
+        if (colName && obj[colName]) {
+            obj[colName] = value
+            obj["__EntityState"] = 16
+        }
+    },
+    /**
+     * #Delete data line in DataSet with data-key
+     * @index: data-key to remove
+     */
+    Delete: (dataKey) => {
+        let seft = DataSet;
+
+        if (!dataKey) {
+            alert("DataSet find not with index parameter NULL!")
+            return;
+        }
+
+        if (!seft.Data[dataKey]) {
+            alert("DataSet with index not exists!")
+            return;
+        }
+
+        delete DataSet.Data[dataKey];
+    },
+    Initialization: (data: []) => {
+        console.log("DataSet Initialization")
+        data.map((item: any, id: any) => {
+            let obj: any = {}
+            const original: any = Object.assign({}, item);
+            const current: any = Object.assign({}, item);
+
+            current["__EntityState"] = 0
+            obj["original"] = original
+            obj["current"] = current
+
+            DataSet.Data[original.idv4 ?? 0] = obj;
+        });
+    }
+}
 
 const DataGrid = (props: IGridList) => {
 
@@ -33,120 +144,6 @@ const DataGrid = (props: IGridList) => {
     const [data, setData] = useState<any>(props.data);
     const [cols, setCols] = useState<IGridColumn[]>(props.colModel);
     const [activeRow, setActiveRow] = useState<string>();
-
-    const DataSet: IChangeSet = {
-        Data: {}
-        /**
-         * #Find data line in DataSet with data-key
-         * @dataKey: data-key to seeking
-         */
-        , Find: (dataKey) => {
-            let seft = DataSet;
-
-            if (!dataKey) {
-                alert("DataSet find not with index parameter NULL!")
-                return;
-            }
-
-            if (!seft.Data[dataKey]) {
-                alert("DataSet with index not exists!")
-                return;
-            }
-
-            return seft.Data[dataKey].current;
-        },
-        /**
-         * #Create data line in DataSet with data-key
-         * @dataKey: data-key 
-         * @colName: property name of col
-         * @value: new value to update
-         */
-        Create: (dataKey, object) => {
-            let seft = DataSet;
-
-            if (!dataKey) {
-                alert("data key is NULL!")
-                return;
-            }
-
-            if (seft.Data[dataKey]) {
-                alert("data key is already exists!")
-                return;
-            }
-
-            let obj: any = {}
-            const original: any = Object.assign({}, object);
-            const current: any = Object.assign({}, object);
-
-            current["__EntityState"] = 4
-            obj["original"] = original
-            obj["current"] = current
-
-            DataSet.Data[original.idv4 ?? 0] = obj;
-        },
-        /**
-         * #Update data line in DataSet with data-key
-         * @dataKey: data-key 
-         * @colName: property name of col
-         * @value: new value to update
-         */
-        Update: (dataKey, colName, value) => {
-            let seft = DataSet;
-
-            if (!dataKey) {
-                alert("DataSet find not with index parameter NULL!")
-                return;
-            }
-
-            if (!seft.Data[dataKey]) {
-                alert("DataSet with index not exists!")
-                return;
-            }
-
-            let obj: any;
-            obj = seft.Find(dataKey);
-            if (colName && obj[colName]) {
-                obj[colName] = value
-                obj["__EntityState"] = 16
-            }
-        },
-        /**
-         * #Delete data line in DataSet with data-key
-         * @index: data-key to remove
-         */
-        Delete: (dataKey) => {
-            let seft = DataSet;
-
-            if (!dataKey) {
-                alert("DataSet find not with index parameter NULL!")
-                return;
-            }
-
-            if (!seft.Data[dataKey]) {
-                alert("DataSet with index not exists!")
-                return;
-            }
-
-            delete DataSet.Data[dataKey];
-        },
-        Initialization: () => {
-            console.log("DataSet Initialization")
-            data.map((dataRow: any, id: any) => {
-                let obj: any = {}
-                const original: any = Object.assign({}, dataRow);
-                const current: any = Object.assign({}, dataRow);
-
-                current["__EntityState"] = 0
-
-                obj["original"] = original
-                obj["current"] = current
-
-                DataSet.Data[original.idv4 ?? 0] = obj;
-            });
-        }
-    }
-
-    DataSet.Initialization();
 
     const handleMouseDown = (e: MouseEvent, th: HTMLTableCellElement, tableHeight: any) => {
 
@@ -341,13 +338,6 @@ const DataGrid = (props: IGridList) => {
 
             let trs = Array.from(tbody.children)
             if (trs.length == 0) return
-
-            let callback: boolean = true;
-            if (delRow && typeof (delRow) === "function")
-                callback = delRow();
-
-            if (!callback) return;
-
             let i: number = 0
             let id: any;
             let trNext: any = null;
@@ -373,8 +363,16 @@ const DataGrid = (props: IGridList) => {
                 else if (trPrev)
                     trPrev.click();
 
+                DataSet.Delete(id);
                 return data.filter((row: any) => row.idv4 !== id);
             });
+
+            let callback: boolean = true;
+            if (delRow && typeof (delRow) === "function")
+                callback = delRow();
+
+            if (!callback) return;
+
         },
         AddRow: () => {
             let callback: any = {};
@@ -404,16 +402,15 @@ const DataGrid = (props: IGridList) => {
             fRow["key"] = randUUID();
 
             setActiveRow(id);
-            setData([...data, fRow]);
+            setData([fRow, ...data]);
             DataSet.Create(id, fRow);
         }
     }
 
     useEffect(() => {
         console.log("useEffect DataGrip Run")
-        //setRow(uuid)
         eventDragCol();
-        //eventClickRow();
+        DataSet.Initialization(data);
         eventClickCell.initEvent();
     }, []);
 
@@ -462,7 +459,7 @@ const DataGrid = (props: IGridList) => {
                             {
                                 data.map((item: IGridColumn, index: number) => (
                                     <Row
-                                        clickHighLightEvent={GridActivity.ClickRow}
+                                        clickHighLightEvent={setActiveRow}
                                         classNm={activeRow == item.idv4 ? "selected" : undefined}
                                         key={item.idv4}
                                         cols={cols}

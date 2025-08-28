@@ -4,7 +4,7 @@ interface IChangeSet {
 	Update: (index: string | undefined, dataProp: string | undefined, value: string | undefined) => void;
 	Create: (index: string | undefined, data: {}) => void;
 	Find: (index: string | undefined) => object;
-	Initialization: () => void;
+	Initialization: (data: any) => void;
 }
 
 export type { IChangeSet }

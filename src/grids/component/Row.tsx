@@ -13,7 +13,7 @@ const Row = memo(({ cols, data, classNm, clickHighLightEvent }: RowProps) => {
     return (
         <tr
             onClick={() => clickHighLightEvent(data["idv4"])}
-            className={classNm ? classNm : undefined}
+            className={classNm ?? undefined}
             key={data["idv4"]}
             data-key={data["idv4"]}>
             {

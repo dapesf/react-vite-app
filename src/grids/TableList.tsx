@@ -22,6 +22,10 @@ export default function ListTable() {
 		, afterCell: (e: any, uuid: string, DataSet: IChangeSet) => {
 			return true;
 		}
+		, delRow: () => {
+
+			return true;
+		}
 		, addRow: (data: Record<string, any>) => {
 			data = {
 				"name": "test ne",

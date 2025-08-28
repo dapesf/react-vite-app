@@ -8,7 +8,7 @@ interface IGridList extends React.PropsWithChildren<{}> {
     ref?: RefObject<HTMLTableElement | null>,
     afterCell?: (e: any, uuid: string, DataSet: IChangeSet) => boolean,
     addRow?: (data: object) => {},
-    delRow?: () => boolean
+    delRow?: () => boolean,
 }
 
 interface IGridColumn {
